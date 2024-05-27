@@ -23,6 +23,5 @@ def list_tables():
 def create_table(table_name, column_families):
     # Crear una nueva tabla como un HFile
     table = HFile(table_name, column_families)
-
     # Guardar la tabla en disco
     table.save_to_file()
