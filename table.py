@@ -25,3 +25,15 @@ def create_table(table_name, column_families):
     table = HFile(table_name, column_families)
     # Guardar la tabla en disco
     table.save_to_file()
+    
+def put(table_name, row_key, column_family, column, value):
+    # Cargar la tabla desde el archivo
+    try:
+        table = HFile.load_from_file(table_name)
+    except FileNotFoundError:
+        print(f"Error: La tabla '{table_name}' no existe.")
+        return
+    # Agregar una nueva entrada a la tabla
+    table.put(row_key, column_family, column, value)
+    # Guardar la tabla en disco
+    table.save_to_file()
