@@ -47,8 +47,7 @@ class HFile:
             # Si no existe, insertar un nuevo registro
             bisect.insort(self.data[column_family], entry, key=lambda x: (x['row_key'], x['column']))
             self.metadata['num_entries'] += 1
-
-        self.metadata['file_size'] += len(str(entry))
+            self.metadata['file_size'] += len(str(entry))
     
     def get(self, row_key):
         if not self.enabled:
@@ -90,6 +89,7 @@ class HFile:
             original_length = len(self.data[column_family])
             self.data[column_family] = [entry for entry in self.data[column_family] if not (entry['row_key'] == row_key and entry['column'] == column)]
             affected_rows = original_length - len(self.data[column_family])
+            self.num_entries -= affected_rows
             if affected_rows > 0:
                 print(f"Cell '{column}' in row '{row_key}' and column family '{column_family}' deleted.")
                 print(f"\n{affected_rows} row(s)")
@@ -97,7 +97,7 @@ class HFile:
                 print(f"Error: Column '{column}' does not exist in row '{row_key}'.")
         else:
             print(f"Error: Column Family '{column_family}' does not exist.")
-            
+
     def delete_all(self, row_key):
         if not self.enabled:
             print(f"\033[31mError: The table '{self.table_name}' is disabled.\033[0m")
@@ -107,6 +107,7 @@ class HFile:
             original_length = len(self.data[column_family])
             self.data[column_family] = [entry for entry in self.data[column_family] if entry['row_key'] != row_key]
             affected_rows += original_length - len(self.data[column_family])
+        self.num_entries -= affected_rows
         print(f"\n{affected_rows} row(s)")
 
     def delete_column_family_rows(self, column_family, row_key):
@@ -117,6 +118,7 @@ class HFile:
             original_length = len(self.data[column_family])
             self.data[column_family] = [entry for entry in self.data[column_family] if entry['row_key'] != row_key]
             affected_rows = original_length - len(self.data[column_family])
+            self.num_entries -= affected_rows
             if affected_rows > 0:
                 print(f"All cells in row '{row_key}' and column family '{column_family}' deleted.")
                 print(f"\n{affected_rows} row(s)")
@@ -124,6 +126,12 @@ class HFile:
                 print(f"Error: Row '{row_key}' does not exist in column family '{column_family}'.")
         else:
             print(f"Error: Column Family '{column_family}' does not exist.")
+            
+    def count(self):
+        if not self.enabled:
+            print(f"\033[31mError: The table '{self.table_name}' is disabled.\033[0m")
+            return
+        return self.metadata['num_entries']
 
     def delete_column(self, column_family, column):
         if not self.enabled:
