@@ -28,6 +28,9 @@ def create_table(table_name, column_families):
     
 def put(table_name, row_key, column_family, column, value):
     # Cargar la tabla desde el archivo
+    
+    start = time.time()
+    
     try:
         table = HFile.load_from_file(table_name)
     except FileNotFoundError:
@@ -37,3 +40,44 @@ def put(table_name, row_key, column_family, column, value):
     table.put(row_key, column_family, column, value)
     # Guardar la tabla en disco
     table.save_to_file()
+    
+    end = time.time()
+
+    print(f"Took {end - start:.4f} seconds")
+
+def addColumnFamily(table_name, column_family):
+    try:
+        table = HFile.load_from_file(table_name)
+    except FileNotFoundError:
+        print(f"Error: La tabla '{table_name}' no existe.")
+        return
+    table.column_families.append(column_family)
+    table.data[column_family] = []
+    table.save_to_file()
+
+def removeColumnFamily(table_name, column_family):
+    try:
+        table = HFile.load_from_file(table_name)
+    except FileNotFoundError:
+        print(f"Error: La tabla '{table_name}' no existe.")
+        return
+    if column_family not in table.column_families:
+        print(f"Error: La familia de columnas '{column_family}' no existe en la tabla '{table_name}'.")
+        return
+    table.column_families.remove(column_family)
+    del table.data[column_family]
+    table.save_to_file()
+
+def drop_table(table_name):
+    try:
+        os.remove(f"db/{table_name}.hfile.json")
+    except FileNotFoundError:
+        print(f"Error: La tabla '{table_name}' no existe.")
+        return
+    print(f"Tabla '{table_name}' eliminada.")
+
+def drop_all_tables():
+    tables = glob.glob('db/*.hfile.json')
+    for table in tables:
+        os.remove(table)
+    print(f"{len(tables)} tablas eliminadas.")

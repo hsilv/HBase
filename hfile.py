@@ -11,14 +11,29 @@ class HFile:
         self.table_name = table_name
         self.column_families = column_families
         self.data = {cf: [] for cf in column_families}
+        self.enabled = True
         self.metadata = {
             'num_entries': 0,
             'file_size': 0,
             'column_families': column_families,
         }
 
+    def enable(self):
+        self.enabled = True
 
+    def disable(self):
+        self.enabled = False
+    
+    def is_enabled(self):
+        return self.enabled
+    
     def put(self, row_key, column_family, column, value):
+        if not self.enabled:
+            print(f"\033[31mError: The table '{self.table_name}' is disabled.\033[0m")
+            return
+        if column_family not in self.metadata['column_families']:
+            print(f"\033[31mError: The column family '{column_family}' does not exist in the table '{self.table_name}'.\033[0m")
+            return
         timestamp = int(time.time() * 1000)
         entry = {'row_key': row_key, 'column': column, 'timestamp': timestamp, 'value': value}
 
@@ -39,6 +54,7 @@ class HFile:
         filename = f"db/{self.table_name}.hfile.json"
         with open(filename, 'w') as f:
             json.dump({
+                'enabled': self.enabled,
                 'table_name': self.table_name,
                 'data': self.data,
                 'metadata': self.metadata,
@@ -50,6 +66,7 @@ class HFile:
         with open(filename, 'r') as f:
             data = json.load(f)
             hfile = HFile(table_name, data['metadata']['column_families'])
+            hfile.enabled = data['enabled']  # Cargar el valor de 'enabled' del archivo
             # Convertir todas las entradas a diccionarios
             for cf, entries in data['data'].items():
                 hfile.data[cf] = [dict(entry) for entry in entries]
