@@ -64,6 +64,16 @@ class HFile:
                     
         print()
         return None
+    
+    def scan(self):
+        if not self.enabled:
+            print(f"\033[31mError: The table '{self.table_name}' is disabled.\033[0m")
+            return
+        print("{:<20} {:<20}".format("COLUMN", "CELL"))
+        for column_family, entries in self.data.items():
+            for entry in entries:
+                print("{:<20} {:<20}".format(column_family + ':' + entry['column'], 'timestamp=' + str(entry['timestamp'])+', ' + 'value='+ entry['value']))
+        return None
 
     def save_to_file(self):
         filename = f"db/{self.table_name}.hfile.json"

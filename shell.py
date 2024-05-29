@@ -73,6 +73,20 @@ class MyShell(cmd.Cmd):
             return
         table_name, row_key = args
         get(table_name, row_key)
+        
+    def do_scan(self, arg):
+        'Obtener todas las entradas de una tabla: scan [nombre_tabla]'
+        args = shlex.split(arg)
+        if len(args) != 1:
+            print("Error: Debes proporcionar el nombre de la tabla.")
+            return
+        table_name = args[0]
+        try:
+            table = HFile.load_from_file(table_name)
+        except FileNotFoundError:
+            print(f"Error: La tabla '{table_name}' no existe.")
+            return
+        table.scan()
     
     def do_list(self, arg):
         'Listar tablas disponibles en la base de datos'
