@@ -81,6 +81,49 @@ class HFile:
                     print("{:<20} {:<20}".format(column_family + ':' + entry['column'], 'timestamp=' + str(entry['timestamp'])+', ' + 'value='+ entry['value']))
                 count += 1
         return None
+
+    def delete_cell(self, row_key, column_family, column):
+        if not self.enabled:
+            print(f"\033[31mError: The table '{self.table_name}' is disabled.\033[0m")
+            return
+        if column_family in self.data and row_key in self.data[column_family]:
+            if column in self.data[column_family][row_key]:
+                del self.data[column_family][row_key][column]
+                print(f"Cell '{column}' in row '{row_key}' and column family '{column_family}' deleted.")
+            else:
+                print(f"Error: Column '{column}' does not exist.")
+        else:
+            print(f"Error: Row '{row_key}' or Column Family '{column_family}' does not exist.")
+            
+    def delete_all(self, row_key):
+        if not self.enabled:
+            print(f"\033[31mError: The table '{self.table_name}' is disabled.\033[0m")
+            return
+        affected_rows = 0
+        for column_family in self.data:
+            original_length = len(self.data[column_family])
+            self.data[column_family] = [entry for entry in self.data[column_family] if entry['row_key'] != row_key]
+            affected_rows += original_length - len(self.data[column_family])
+        print(f"\n{affected_rows} row(s)")
+
+    def delete_column_family_rows(self, column_family, row_key):
+        if not self.enabled:
+            print(f"\033[31mError: The table '{self.table_name}' is disabled.\033[0m")
+            return
+        if column_family in self.data and row_key in self.data[column_family]:
+            del self.data[column_family][row_key]
+            print(f"All cells in row '{row_key}' and column family '{column_family}' deleted.")
+        else:
+            print(f"Error: Row '{row_key}' or Column Family '{column_family}' does not exist.")
+
+    def delete_column(self, column_family, column):
+        if not self.enabled:
+            print(f"\033[31mError: The table '{self.table_name}' is disabled.\033[0m")
+            return
+        for row_key in self.data[column_family]:
+            if column in self.data[column_family][row_key]:
+                del self.data[column_family][row_key][column]
+        print(f"All cells in column '{column}' and column family '{column_family}' deleted.")
     
     def save_to_file(self):
         filename = f"db/{self.table_name}.hfile.json"

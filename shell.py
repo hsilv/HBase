@@ -104,6 +104,26 @@ class MyShell(cmd.Cmd):
             return
         table_name, row_key, column_family, column, value = args
         put(table_name, row_key, column_family, column, value)
+        
+    def do_delete_all(self, arg):
+        'Eliminar todas las entradas de una tabla con una row_key determinada: delete_all [nombre_tabla] [row_key]'
+        start = time.time()
+        args = arg.split()
+        if len(args) < 2:
+            print("Error: Debes proporcionar el nombre de la tabla y la row_key.")
+            return
+        table_name = args[0]
+        row_key = args[1]
+        
+        try:
+            table = HFile.load_from_file(table_name)
+            table.delete_all(row_key)
+            table.save_to_file()
+        except FileNotFoundError:
+            print(f"Error: La tabla '{table_name}' no existe.")
+            return
+        end = time.time()
+        print(f"Took {end - start:.4f} seconds")
     
     def do_enable(self, arg):
         'Habilitar una tabla en la base de datos: enable [nombre_tabla]'
