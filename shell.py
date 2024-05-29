@@ -5,7 +5,7 @@ import time
 import shlex
 
 from hfile import HFile
-from table import addColumnFamily, create_table, drop_table, list_tables, put, removeColumnFamily, drop_all_tables
+from table import addColumnFamily, create_table, drop_table, get, list_tables, put, removeColumnFamily, drop_all_tables
 class MyShell(cmd.Cmd):
     intro = '\nHBase Shell\nEscribe "help" para ver la lista de comandos\nEscribe "exit" para salir de la shell\nv1.0\n'
     prompt = f'\033[1;32m{getpass.getuser()}\033[0m\033[1;37m:\033[0m\033[1;33m{datetime.now().strftime("%H:%M:%S")}\033[0m \033[1;37m> \033[0m'
@@ -64,7 +64,15 @@ class MyShell(cmd.Cmd):
         'Cerrar shell'
         print('Cerrando shell...')
         return True
-    
+
+    def do_get(self, arg):
+        'Obtener una entrada de una tabla: get [nombre_tabla] [row_key] [familia_columna] [columna]'
+        args = shlex.split(arg)
+        if len(args) < 1:
+            print("Error: Debes proporcionar el nombre de la tabla, row key, familia de columnas y columna.")
+            return
+        table_name, row_key = args
+        get(table_name, row_key)
     
     def do_list(self, arg):
         'Listar tablas disponibles en la base de datos'

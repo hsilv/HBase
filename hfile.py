@@ -49,6 +49,21 @@ class HFile:
             self.metadata['num_entries'] += 1
 
         self.metadata['file_size'] += len(str(entry))
+    
+    def get(self, row_key):
+        if not self.enabled:
+            print(f"\033[31mError: The table '{self.table_name}' is disabled.\033[0m")
+            return
+        print()
+        print("{:<20} {:<20}".format("COLUMN", "CELL"))
+        print()
+        for column_family, entries in self.data.items():
+            for entry in entries:
+                if entry['row_key'] == row_key:
+                    print("{:<20} {:<20}".format(column_family + ':' + entry['column'], 'timestamp=' + str(entry['timestamp'])+', ' + 'value='+ entry['value']))
+                    
+        print()
+        return None
 
     def save_to_file(self):
         filename = f"db/{self.table_name}.hfile.json"

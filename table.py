@@ -44,6 +44,7 @@ def put(table_name, row_key, column_family, column, value):
     end = time.time()
 
     print(f"Took {end - start:.4f} seconds")
+    
 
 def addColumnFamily(table_name, column_family):
     try:
@@ -81,3 +82,14 @@ def drop_all_tables():
     for table in tables:
         os.remove(table)
     print(f"{len(tables)} tablas eliminadas.")
+
+def get(table_name, row_key):
+    start = time.time()
+    try:
+        table = HFile.load_from_file(table_name)
+    except FileNotFoundError:
+        print(f"Error: La tabla '{table_name}' no existe.")
+        return
+    table.get(row_key)
+    end = time.time()
+    print(f"Took {end - start:.4f} seconds")
