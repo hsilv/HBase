@@ -81,7 +81,7 @@ def drop_table(table_name):
     except FileNotFoundError:
         print(f"Error: La tabla '{table_name}' no existe.")
         return
-    print(f"Tabla '{table_name}' eliminada.")
+    print(f"Table '{table_name}' deleted.")
 
 def drop_all_tables():
     tables = glob.glob('db/*.hfile.json')

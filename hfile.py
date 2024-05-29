@@ -89,7 +89,7 @@ class HFile:
             original_length = len(self.data[column_family])
             self.data[column_family] = [entry for entry in self.data[column_family] if not (entry['row_key'] == row_key and entry['column'] == column)]
             affected_rows = original_length - len(self.data[column_family])
-            self.num_entries -= affected_rows
+            self.metadata['num_entries'] -= affected_rows
             if affected_rows > 0:
                 print(f"Cell '{column}' in row '{row_key}' and column family '{column_family}' deleted.")
                 print(f"\n{affected_rows} row(s)")
@@ -107,7 +107,7 @@ class HFile:
             original_length = len(self.data[column_family])
             self.data[column_family] = [entry for entry in self.data[column_family] if entry['row_key'] != row_key]
             affected_rows += original_length - len(self.data[column_family])
-        self.num_entries -= affected_rows
+        self.metadata['num_entries'] -= affected_rows
         print(f"\n{affected_rows} row(s)")
 
     def delete_column_family_rows(self, column_family, row_key):
@@ -118,7 +118,7 @@ class HFile:
             original_length = len(self.data[column_family])
             self.data[column_family] = [entry for entry in self.data[column_family] if entry['row_key'] != row_key]
             affected_rows = original_length - len(self.data[column_family])
-            self.num_entries -= affected_rows
+            self.metadata['num_entries'] -= affected_rows
             if affected_rows > 0:
                 print(f"All cells in row '{row_key}' and column family '{column_family}' deleted.")
                 print(f"\n{affected_rows} row(s)")

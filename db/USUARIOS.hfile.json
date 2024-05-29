@@ -1,1 +1,16 @@
-{"enabled": true, "table_name": "USUARIOS", "data": {"estudiantes": [{"row_key": "1", "column": "nombre", "timestamp": 1716946206947, "value": "SEBASTIAN"}, {"row_key": "314", "column": "apellido", "timestamp": 1716947901548, "value": "KIESLING"}, {"row_key": "314", "column": "nombre", "timestamp": 1716947877797, "value": "JOSE"}], "clientes": [{"row_key": "1", "column": "apellido", "timestamp": 1716945721913, "value": "SILVA"}, {"row_key": "1", "column": "nombre", "timestamp": 1716945713985, "value": "SEBASTIAN"}, {"row_key": "314", "column": "apellido", "timestamp": 1716948323634, "value": "KIESLING"}, {"row_key": "314", "column": "nombre", "timestamp": 1716948312211, "value": "CHEPE"}]}, "metadata": {"num_entries": 9, "file_size": 1109, "column_families": ["estudiantes", "clientes"]}}
+{
+    "enabled": true,
+    "table_name": "USUARIOS",
+    "data": {
+        "estudiantes": [],
+        "clientes": []
+    },
+    "metadata": {
+        "num_entries": 0,
+        "file_size": 0,
+        "column_families": [
+            "estudiantes",
+            "clientes"
+        ]
+    }
+}

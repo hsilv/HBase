@@ -178,10 +178,13 @@ class MyShell(cmd.Cmd):
         except FileNotFoundError:
             print(f"\033[31mError: The table '{table_name}' does not exists.\033[0m")
             return
+        print(f"\nDisabling table '{table_name}'")
         table.disable()
         table.save_to_file()
+        print(f"'{table_name}' disabled")
         drop_table(table_name)
         column_families = table.column_families
+        print(f"Creating table '{table_name}' with column families {column_families}")
         create_table(table_name, column_families)
         end = time.time()
         print(f"Took {end - start:.4f} seconds")
