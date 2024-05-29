@@ -76,6 +76,7 @@ class MyShell(cmd.Cmd):
         
     def do_scan(self, arg):
         'Obtener todas las entradas de una tabla: scan [nombre_tabla]'
+        start = time.time()
         args = shlex.split(arg)
         if len(args) != 1:
             print("Error: Debes proporcionar el nombre de la tabla.")
@@ -87,6 +88,9 @@ class MyShell(cmd.Cmd):
             print(f"Error: La tabla '{table_name}' no existe.")
             return
         table.scan()
+        end = time.time()
+        
+        print(f"\nTook {end - start:.4f} seconds")
     
     def do_list(self, arg):
         'Listar tablas disponibles en la base de datos'

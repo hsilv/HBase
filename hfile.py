@@ -65,16 +65,23 @@ class HFile:
         print()
         return None
     
-    def scan(self):
+    def scan(self, limit=None, offset=0):
         if not self.enabled:
             print(f"\033[31mError: The table '{self.table_name}' is disabled.\033[0m")
             return
+        print()
         print("{:<20} {:<20}".format("COLUMN", "CELL"))
+        print()
+        count = 0
         for column_family, entries in self.data.items():
             for entry in entries:
-                print("{:<20} {:<20}".format(column_family + ':' + entry['column'], 'timestamp=' + str(entry['timestamp'])+', ' + 'value='+ entry['value']))
+                if count >= offset:
+                    if limit is not None and count >= (offset + limit):
+                        return None
+                    print("{:<20} {:<20}".format(column_family + ':' + entry['column'], 'timestamp=' + str(entry['timestamp'])+', ' + 'value='+ entry['value']))
+                count += 1
         return None
-
+    
     def save_to_file(self):
         filename = f"db/{self.table_name}.hfile.json"
         with open(filename, 'w') as f:
