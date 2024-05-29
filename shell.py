@@ -124,7 +124,30 @@ class MyShell(cmd.Cmd):
             return
         end = time.time()
         print(f"Took {end - start:.4f} seconds")
-    
+        
+    def do_delete(self, arg):
+        'Eliminar una entrada de una tabla: delete [table_name] [row_key] [column_family] | delete [table_name] [row_key] [column_family] [column]'
+        start = time.time()
+        args = arg.split()
+        if len(args) < 3:
+            print("Error: Debes proporcionar al menos el nombre de la tabla, la familia de columnas y la row key.")
+            return
+        table_name, row_key, column_family = args[:3]
+        column = args[3] if len(args) > 3 else None
+        try:
+            table = HFile.load_from_file(table_name)
+            if column:
+                table.delete_cell(column_family=column_family, row_key=row_key, column=column)
+            else:
+                print(f"Deleting all entries for row key '{row_key}' in column family '{column_family}'")
+                table.delete_column_family_rows(column_family=column_family, row_key=row_key)
+            table.save_to_file()
+        except FileNotFoundError:
+            print(f"Error: La tabla '{table_name}' no existe.")
+            return
+        end = time.time()
+        print(f"Took {end - start:.4f} seconds")
+        
     def do_enable(self, arg):
         'Habilitar una tabla en la base de datos: enable [nombre_tabla]'
         start = time.time()

@@ -86,14 +86,17 @@ class HFile:
         if not self.enabled:
             print(f"\033[31mError: The table '{self.table_name}' is disabled.\033[0m")
             return
-        if column_family in self.data and row_key in self.data[column_family]:
-            if column in self.data[column_family][row_key]:
-                del self.data[column_family][row_key][column]
+        if column_family in self.data:
+            original_length = len(self.data[column_family])
+            self.data[column_family] = [entry for entry in self.data[column_family] if not (entry['row_key'] == row_key and entry['column'] == column)]
+            affected_rows = original_length - len(self.data[column_family])
+            if affected_rows > 0:
                 print(f"Cell '{column}' in row '{row_key}' and column family '{column_family}' deleted.")
+                print(f"\n{affected_rows} row(s)")
             else:
-                print(f"Error: Column '{column}' does not exist.")
+                print(f"Error: Column '{column}' does not exist in row '{row_key}'.")
         else:
-            print(f"Error: Row '{row_key}' or Column Family '{column_family}' does not exist.")
+            print(f"Error: Column Family '{column_family}' does not exist.")
             
     def delete_all(self, row_key):
         if not self.enabled:
@@ -110,11 +113,17 @@ class HFile:
         if not self.enabled:
             print(f"\033[31mError: The table '{self.table_name}' is disabled.\033[0m")
             return
-        if column_family in self.data and row_key in self.data[column_family]:
-            del self.data[column_family][row_key]
-            print(f"All cells in row '{row_key}' and column family '{column_family}' deleted.")
+        if column_family in self.data:
+            original_length = len(self.data[column_family])
+            self.data[column_family] = [entry for entry in self.data[column_family] if entry['row_key'] != row_key]
+            affected_rows = original_length - len(self.data[column_family])
+            if affected_rows > 0:
+                print(f"All cells in row '{row_key}' and column family '{column_family}' deleted.")
+                print(f"\n{affected_rows} row(s)")
+            else:
+                print(f"Error: Row '{row_key}' does not exist in column family '{column_family}'.")
         else:
-            print(f"Error: Row '{row_key}' or Column Family '{column_family}' does not exist.")
+            print(f"Error: Column Family '{column_family}' does not exist.")
 
     def delete_column(self, column_family, column):
         if not self.enabled:
