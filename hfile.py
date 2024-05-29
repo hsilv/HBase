@@ -152,6 +152,7 @@ class HFile:
                 'metadata': self.metadata,
             }, f)
 
+
     @staticmethod
     def load_from_file(table_name):
         filename = f"db/{table_name}.hfile.json"

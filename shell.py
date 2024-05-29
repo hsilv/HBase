@@ -148,6 +148,45 @@ class MyShell(cmd.Cmd):
         end = time.time()
         print(f"Took {end - start:.4f} seconds")
         
+    def do_count(self, arg):
+        'Contar el número de entradas en una tabla: count [nombre_tabla]'
+        start = time.time()
+        args = arg.split()
+        if len(args) != 1:
+            print("\033[31mError: Debes proporcionar el nombre de la tabla.\033[0m")
+            return
+        table_name = args[0]
+        try:
+            table = HFile.load_from_file(table_name)
+        except FileNotFoundError:
+            print(f"\033[31mError: The table '{table_name}' does not exists.\033[0m")
+            return
+        print(table.count())
+        end = time.time()
+        print(f"Took {end - start:.4f} seconds")
+    
+    def do_truncate(self, arg):
+        'Eliminar todas las entradas de una tabla: truncate [nombre_tabla]'
+        start = time.time()
+        args = arg.split()
+        if len(args) != 1:
+            print("\033[31mError: Debes proporcionar el nombre de la tabla.\033[0m")
+            return
+        table_name = args[0]
+        try:
+            table = HFile.load_from_file(table_name)
+        except FileNotFoundError:
+            print(f"\033[31mError: The table '{table_name}' does not exists.\033[0m")
+            return
+        table.disable()
+        table.save_to_file()
+        drop_table(table_name)
+        column_families = table.column_families
+        create_table(table_name, column_families)
+        end = time.time()
+        print(f"Took {end - start:.4f} seconds")
+        
+        
     def do_enable(self, arg):
         'Habilitar una tabla en la base de datos: enable [nombre_tabla]'
         start = time.time()
